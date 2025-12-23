@@ -18,8 +18,8 @@ API_ID = int(os.environ.get("API_ID", 12345))
 API_HASH = os.environ.get("API_HASH", "your_hash")
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "your_token")
 LOG_CHANNEL = -1003166629808 
-OWNER_USERNAME = "your_username" # Apna username yahan dalein
-CHANNEL_USERNAME = "your_channel" # Apne channel ka username yahan dalein
+OWNER_USERNAME = "Ovesh_Boss" # Apna username yahan dalein
+CHANNEL_USERNAME = "OveshBossOfficial" # Apne channel ka username yahan dalein
 
 app = Client("rose_pro_manager", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -58,7 +58,7 @@ async def pm_handler(client, message):
         
         btns = InlineKeyboardMarkup([
             [InlineKeyboardButton(sc("➕ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ ➕"), url=f"t.me/{(await client.get_me()).username}?startgroup=true")],
-            [InlineKeyboardButton(sc("ᴏᴡɴᴇʀ"), url=f"t.me/{OWNER_USERNAME}"), InlineKeyboardButton(sc("ᴄʜᴀɴɴᴇʟ"), url=f"t.me/{CHANNEL_USERNAME}")],
+            [InlineKeyboardButton(sc("ᴏᴡɴᴇʀ"), url=f"t.me/{Ovesh_Boss}"), InlineKeyboardButton(sc("ᴄʜᴀɴɴᴇʟ"), url=f"t.me/{OveshBossOfficial}")],
             [InlineKeyboardButton(sc("ʜᴇʟᴘ & ᴄᴍᴅs"), callback_data="help_main")]
         ])
         await message.reply_photo(photo=img, caption=caption, reply_markup=btns)
