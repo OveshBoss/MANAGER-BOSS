@@ -12,24 +12,24 @@ web_app = Flask(__name__)
 
 @web_app.route('/')
 def home():
-    return "ʙᴏᴛ ɪs ᴀʟɪᴠᴇ ᴀɴᴅ ʀᴜɴɴɪɴɢ!"
+    return "ʙᴏᴛ ɪs ᴀʟɪᴠᴇ ᴀɴᴅ ʀᴜɴɴɪɴɢ ᴏɴ ʀᴇɴᴅᴇʀ!"
 
 def run_web():
     port = int(os.environ.get("PORT", 8080))
     web_app.run(host='0.0.0.0', port=port)
 
 # --- CONFIG ---
-API_ID = int(os.environ.get("API_ID", 12345)) # Render env se uthayega
-API_HASH = os.environ.get("API_HASH", "your_api_hash") 
+API_ID = int(os.environ.get("API_ID", 12345))
+API_HASH = os.environ.get("API_HASH", "your_api_hash")
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "your_bot_token")
 OWNER_ID = int(os.environ.get("OWNER_ID", 12345678))
 
-# Aapki Log Channel ID yahan fix kar di hai
+# AAPKI LOG CHANNEL ID FIX KAR DI HAI
 LOG_CHANNEL = -1003166629808 
 
 app = Client("manager_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-# --- DATABASE ---
+# --- DATABASE STORAGE ---
 db = {"fsub": {}, "rules": {}}
 
 # --- SMALL CAPS HELPER ---
@@ -41,8 +41,10 @@ def sc(text):
 # --- START COMMAND WITH RANDOM REACTION & LOGGING ---
 @app.on_message(filters.command("start") & filters.private)
 async def start_cmd(client, message):
-    # Random Positive Emojis
+    # 7 Positive Emojis List
     emojis = ["🔥", "❤️", "✨", "⚡", "🌟", "🥂", "🧿"]
+    
+    # 1. Random Emoji React (PM me)
     try:
         await message.react(emoji=random.choice(emojis))
     except:
@@ -51,16 +53,20 @@ async def start_cmd(client, message):
     user = message.from_user
     WELCOME_IMG = "https://graph.org/file/3bf4b466c0c5cfc956fe8-f1f7d952b4b3c10747.jpg"
     
-    # Log to Channel (Small Caps Font as requested)
-    log_text = (
-        f"**{sc('👤 ɴᴇᴡ ᴜsᴇʀ sᴛᴀʀᴛᴇᴅ ʙᴏᴛ')}**\n\n"
-        f"🆔 **{sc('ᴜsᴇʀ ɪᴅ')}:** `{user.id}`\n"
-        f"👤 **{sc('ɴᴀᴍᴇ')}:** {user.first_name}\n"
-        f"🔗 **{sc('ᴜsᴇʀɴᴀᴍᴇ')}:** @{user.username if user.username else 'ɴᴏɴᴇ'}\n"
-        f"📅 **{sc('ᴅᴀᴛᴇ')}:** 𝟸𝟶𝟸𝟻"
-    )
-    await client.send_message(LOG_CHANNEL, log_text)
+    # 2. Log to Channel (Small Caps) - Try/Except to prevent crash
+    try:
+        log_text = (
+            f"**{sc('👤 ɴᴇᴡ ᴜsᴇʀ sᴛᴀʀᴛᴇᴅ ʙᴏᴛ')}**\n\n"
+            f"🆔 **{sc('ᴜsᴇʀ ɪᴅ')}:** `{user.id}`\n"
+            f"👤 **{sc('ɴᴀᴍᴇ')}:** {user.first_name}\n"
+            f"🔗 **{sc('ᴜsᴇʀɴᴀᴍᴇ')}:** @{user.username if user.username else 'ɴᴏɴᴇ'}\n"
+            f"📅 **{sc('ᴅᴀᴛᴇ')}:** 𝟸𝟶𝟸𝟻"
+        )
+        await client.send_message(LOG_CHANNEL, log_text)
+    except Exception as e:
+        print(f"Log error: {e}")
 
+    # 3. Welcome Message with Image
     caption = (
         f"**{sc('ʜᴇʟʟᴏ!')}** 👋\n\n"
         f"ɪ ᴀᴍ **{sc('ᴘᴏᴡᴇʀғᴜʟ ɢʀᴏᴜᴘ ᴍᴀɴᴀɢᴇʀ ʙᴏᴛ')}**.\n"
@@ -86,14 +92,17 @@ async def fsub_handler(client, message):
     try:
         await client.get_chat_member(channel_id, message.from_user.id)
     except UserNotParticipant:
-        await client.restrict_chat_member(chat_id, message.from_user.id, ChatPermissions(can_send_messages=False))
-        await message.delete()
-        
-        btn = InlineKeyboardMarkup([
-            [InlineKeyboardButton(sc("ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ"), url=f"t.me/{(await client.get_chat(channel_id)).username}")],
-            [InlineKeyboardButton(sc("✅ ᴠᴇʀɪғʏ ᴊᴏɪɴᴇᴅ"), callback_data=f"vfy_{message.from_user.id}_{channel_id}")]
-        ])
-        await message.reply_text(sc(f"ʜᴇʏ {message.from_user.mention}, ᴊᴏɪɴ ᴀɴᴅ ᴠᴇʀɪғʏ ᴛᴏ sᴘᴇᴀᴋ!"), reply_markup=btn)
+        try:
+            await client.restrict_chat_member(chat_id, message.from_user.id, ChatPermissions(can_send_messages=False))
+            await message.delete()
+            
+            btn = InlineKeyboardMarkup([
+                [InlineKeyboardButton(sc("ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ"), url=f"t.me/{(await client.get_chat(channel_id)).username}")],
+                [InlineKeyboardButton(sc("✅ ᴠᴇʀɪғʏ ᴊᴏɪɴᴇᴅ"), callback_data=f"vfy_{message.from_user.id}_{channel_id}")]
+            ])
+            await message.reply_text(sc(f"ʜᴇʏ {message.from_user.mention}, ᴊᴏɪɴ ᴀɴᴅ ᴠᴇʀɪғʏ ᴛᴏ sᴘᴇᴀᴋ!"), reply_markup=btn)
+        except:
+            pass
 
 @app.on_callback_query(filters.regex(r"^vfy_"))
 async def verify_callback(client, cb):
@@ -108,7 +117,7 @@ async def verify_callback(client, cb):
     except UserNotParticipant:
         await cb.answer(sc("ᴊᴏɪɴ ᴛʜᴇ ᴄʜᴀɴɴᴇʟ ғɪʀsᴛ!"), show_alert=True)
 
-# --- ADMIN ACTIONS ---
+# --- ADMIN ACTIONS (BAN, MUTE, KICK) ---
 @app.on_message(filters.command(["ban", "mute", "kick", "unban", "unmute"]) & filters.group)
 async def admin_cmds(client, message):
     admin = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -118,27 +127,32 @@ async def admin_cmds(client, message):
     target = message.reply_to_message.from_user
     cmd = message.command[0]
 
-    if "ban" in cmd:
-        await client.ban_chat_member(message.chat.id, target.id)
-        act = "ʙᴀɴɴᴇᴅ"
-    elif "mute" in cmd:
-        await client.restrict_chat_member(message.chat.id, target.id, ChatPermissions(can_send_messages=False))
-        act = "ᴍᴜᴛᴇᴅ"
-    elif "kick" in cmd:
-        await client.ban_chat_member(message.chat.id, target.id)
-        await client.unban_chat_member(message.chat.id, target.id)
-        act = "ᴋɪᴄᴋᴇᴅ"
-    elif "un" in cmd:
-        await client.unban_chat_member(message.chat.id, target.id)
-        await client.restrict_chat_member(message.chat.id, target.id, ChatPermissions(can_send_messages=True))
-        act = "ᴜɴ-ʀᴇsᴛʀɪᴄᴛᴇᴅ"
+    try:
+        if "ban" in cmd:
+            await client.ban_chat_member(message.chat.id, target.id)
+            act = "ʙᴀɴɴᴇᴅ"
+        elif "mute" in cmd:
+            await client.restrict_chat_member(message.chat.id, target.id, ChatPermissions(can_send_messages=False))
+            act = "ᴍᴜᴛᴇᴅ"
+        elif "kick" in cmd:
+            await client.ban_chat_member(message.chat.id, target.id)
+            await client.unban_chat_member(message.chat.id, target.id)
+            act = "ᴋɪᴄᴋᴇᴅ"
+        elif "un" in cmd:
+            await client.unban_chat_member(message.chat.id, target.id)
+            await client.restrict_chat_member(message.chat.id, target.id, ChatPermissions(can_send_messages=True))
+            act = "ᴜɴ-ʀᴇsᴛʀɪᴄᴛᴇᴅ"
 
-    await message.reply(sc(f"✅ {target.first_name} {act}!"))
-    log_text = sc(f"📑 ᴀᴅᴍɪɴ ʟᴏɢ\n\nᴀᴄᴛɪᴏɴ: {act}\nɢʀᴏᴜᴘ: {message.chat.title}\nᴀᴅᴍɪɴ: {message.from_user.id}\nᴛᴀʀɢᴇᴛ: {target.id}")
-    await client.send_message(LOG_CHANNEL, log_text)
+        await message.reply(sc(f"✅ {target.first_name} {act}!"))
+        
+        # Admin Log to Channel
+        log_text = sc(f"📑 ᴀᴅᴍɪɴ ʟᴏɢ\n\nᴀᴄᴛɪᴏɴ: {act}\nɢʀᴏᴜᴘ: {message.chat.title}\nᴀᴅᴍɪɴ: {message.from_user.id}\nᴛᴀʀɢᴇᴛ: {target.id}")
+        await client.send_message(LOG_CHANNEL, log_text)
+    except Exception as e:
+        await message.reply(f"Error: {e}")
 
-# --- STARTUP ---
+# --- BOT STARTUP ---
 if __name__ == "__main__":
     Thread(target=run_web).start()
-    print(sc("ʙᴏᴛ ɪs ᴀʟɪᴠᴇ ᴏɴ ʀᴇɴᴅᴇʀ!"))
+    print(sc("ʙᴏᴛ ɪs sᴛᴀʀᴛɪɴɢ..."))
     app.run()
